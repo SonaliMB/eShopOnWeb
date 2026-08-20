@@ -1,168 +1,686 @@
-[![Build Status](https://github.com/dotnet-architecture/eShopOnWeb/workflows/eShopOnWeb%20Build%20and%20Test/badge.svg)](https://github.com/dotnet-architecture/eShopOnWeb/actions)
+# eShopOnWeb — ASP.NET Core Web Application & Software Quality Engineering
 
-# Microsoft eShopOnWeb ASP.NET Core Reference Application
+[![.NET 8](https://img.shields.io/badge/.NET-8.0-512BD4?logo=dotnet\&logoColor=white)](https://dotnet.microsoft.com/)
+[![ASP.NET Core](https://img.shields.io/badge/ASP.NET%20Core-8.0-512BD4?logo=dotnet\&logoColor=white)](https://learn.microsoft.com/aspnet/core/)
+[![C#](https://img.shields.io/badge/C%23-12-239120?logo=csharp\&logoColor=white)](https://learn.microsoft.com/dotnet/csharp/)
+[![Docker](https://img.shields.io/badge/Docker-Supported-2496ED?logo=docker\&logoColor=white)](https://www.docker.com/)
+[![Azure](https://img.shields.io/badge/Azure-Deployment%20Support-0078D4?logo=microsoftazure\&logoColor=white)](https://azure.microsoft.com/)
+[![GitHub Actions](https://img.shields.io/badge/GitHub%20Actions-CI%2FCD-2088FF?logo=githubactions\&logoColor=white)](https://github.com/features/actions)
+[![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 
-Sample ASP.NET Core reference application, powered by Microsoft, demonstrating a single-process (monolithic) application architecture and deployment model. If you're new to .NET development, read the [Getting Started for Beginners](https://github.com/dotnet-architecture/eShopOnWeb/wiki/Getting-Started-for-Beginners) guide.
+## Overview
 
-A list of Frequently Asked Questions about this repository can be found [here](https://github.com/dotnet-architecture/eShopOnWeb/wiki/Frequently-Asked-Questions).
+**eShopOnWeb** is an ASP.NET Core reference application demonstrating a single-process web application architecture and deployment model.
 
-## Overview Video
+This repository is based on the **Microsoft eShopOnWeb reference application** and retains its original application purpose and architecture. It provides an example of building a web application with ASP.NET Core, application/domain separation, Entity Framework Core, ASP.NET Core Identity, a public API, Blazor-based administration functionality, automated tests, Docker support, and Azure deployment resources.
 
-[Steve "ardalis" Smith](https://twitter.com/ardalis) recorded [a live stream providing an overview of the eShopOnWeb reference app](https://www.youtube.com/watch?v=vRZ8ucGac8M&ab_channel=Ardalis) in October 2020. 
+The repository is also organized to make the application's **testing, automation, CI/CD, and engineering practices** easier to understand and evaluate.
 
-## eBook
+> **Attribution:** The underlying eShopOnWeb application is a Microsoft reference application. This repository should not be interpreted as an original implementation of the eShopOnWeb application by the repository owner.
 
-This reference application is meant to support the free .PDF download ebook: [Architecting Modern Web Applications with ASP.NET Core and Azure](https://aka.ms/webappebook), updated to **ASP.NET Core 8.0**. [Also available in ePub/mobi formats](https://dotnet.microsoft.com/learn/web/aspnet-architecture).
+---
 
-You can also read the book in online pages at the .NET docs here: 
-https://docs.microsoft.com/dotnet/architecture/modern-web-apps-azure/
+## What This Project Demonstrates
 
-[<img src="https://dotnet.microsoft.com/blob-assets/images/e-books/aspnet.png" height="300" />](https://dotnet.microsoft.com/learn/web/aspnet-architecture)
+The repository provides a practical example of a modern .NET web application's structure, including:
 
-The **eShopOnWeb** sample is related to the [eShopOnContainers](https://github.com/dotnet/eShopOnContainers) sample application which, in that case, focuses on a microservices/containers-based application architecture. However, **eShopOnWeb** is much simpler in regards to its current functionality and focuses on traditional Web Application Development with a single deployment.
+* ASP.NET Core web application development
+* C# application development
+* Separation of application/domain concerns and infrastructure
+* Entity Framework Core
+* ASP.NET Core Identity
+* Public API implementation
+* Blazor administration components
+* Unit testing
+* Integration testing
+* Functional testing
+* Public API integration testing
+* Docker-based execution
+* Development container support
+* Azure infrastructure definitions
+* GitHub Actions workflows
+* Centralized NuGet package management
 
-The goal for this sample is to demonstrate some of the principles and patterns described in the [eBook](https://aka.ms/webappebook). It is not meant to be an eCommerce reference application, and as such it does not implement many features that would be obvious and/or essential to a real eCommerce application.
+The repository contains separate source and test projects rather than placing the entire application in a single project.
 
-> ### VERSIONS
-> #### The `main` branch is currently running ASP.NET Core 8.0.
-> #### Older versions are tagged.
+---
 
-## Topics (eBook TOC)
+## Technology Stack
 
-- Introduction
-- Characteristics of Modern Web Applications
-- Choosing Between Traditional Web Apps and SPAs
-- Architectural Principles
-- Common Web Application Architectures
-- Common Client Side Technologies
-- Developing ASP.NET Core MVC Apps
-- Working with Data in ASP.NET Core Apps
-- Testing ASP.NET Core MVC Apps
-- Development Process for Azure-Hosted ASP.NET Core Apps
-- Azure Hosting Recommendations for ASP.NET Core Web Apps
+| Area                    | Technology                                 |
+| ----------------------- | ------------------------------------------ |
+| Language                | C#                                         |
+| Framework               | ASP.NET Core 8.0                           |
+| Runtime                 | .NET 8                                     |
+| Web                     | ASP.NET Core MVC / Web                     |
+| API                     | ASP.NET Core Web API                       |
+| UI / Administration     | Blazor                                     |
+| ORM                     | Entity Framework Core                      |
+| Authentication          | ASP.NET Core Identity                      |
+| Database                | SQL Server / Entity Framework Core         |
+| Testing                 | .NET test projects                         |
+| Containerization        | Docker / Docker Compose                    |
+| Cloud                   | Microsoft Azure                            |
+| Infrastructure          | Azure infrastructure files / Bicep         |
+| CI/CD                   | GitHub Actions                             |
+| Package Management      | Central NuGet Package Management           |
+| Development Environment | Dev Containers / GitHub Codespaces support |
 
-## Running the sample using Azd template
+The `main` branch targets ASP.NET Core 8.0, and the solution contains separate projects for the web application, infrastructure, public API, Blazor components, and multiple test layers.
 
-The store's home page should look like this:
+---
 
-![eShopOnWeb home page screenshot](https://user-images.githubusercontent.com/782127/88414268-92d83a00-cdaa-11ea-9b4c-db67d95be039.png)
+# Architecture
 
-The Azure Developer CLI (`azd`) is a developer-centric command-line interface (CLI) tool for creating Azure applications.
+The application follows a layered structure that separates core application concerns from infrastructure and presentation concerns.
 
-You need to install it before running and deploying with Azure Developer CLI.
+```text
+                         ┌───────────────────────┐
+                         │       Web Application  │
+                         │   ASP.NET Core / MVC   │
+                         └───────────┬───────────┘
+                                     │
+                                     ▼
+                         ┌───────────────────────┐
+                         │    ApplicationCore    │
+                         │ Entities / Interfaces │
+                         │ Services / Specs      │
+                         └───────────┬───────────┘
+                                     │
+                                     ▼
+                         ┌───────────────────────┐
+                         │    Infrastructure     │
+                         │ EF Core / Identity    │
+                         │ Data Access            │
+                         └───────────┬───────────┘
+                                     │
+                                     ▼
+                              ┌──────────────┐
+                              │   Database   │
+                              └──────────────┘
 
-### Windows
 
-```powershell
-powershell -ex AllSigned -c "Invoke-RestMethod 'https://aka.ms/install-azd.ps1' | Invoke-Expression"
+       ┌───────────────────┐
+       │    Public API     │
+       └───────────────────┘
+
+       ┌───────────────────┐
+       │   Blazor Admin    │
+       └───────────────────┘
 ```
 
-### Linux/MacOS
+The source solution currently contains:
 
+* `ApplicationCore`
+* `Infrastructure`
+* `Web`
+* `PublicApi`
+* `BlazorAdmin`
+* `BlazorShared`
+
+as well as separate testing projects.
+
+---
+
+# Project Structure
+
+```text
+eShopOnWeb/
+│
+├── .ado/
+├── .devcontainer/
+├── .github/
+│   └── workflows/
+│
+├── .images/
+├── .vscode/
+│
+├── infra/
+│
+├── src/
+│   ├── ApplicationCore/
+│   ├── BlazorAdmin/
+│   ├── BlazorShared/
+│   ├── Infrastructure/
+│   ├── PublicApi/
+│   └── Web/
+│
+├── tests/
+│   ├── FunctionalTests/
+│   ├── IntegrationTests/
+│   ├── PublicApiIntegrationTests/
+│   └── UnitTests/
+│
+├── .dockerignore
+├── .editorconfig
+├── .gitattributes
+├── .gitignore
+├── CodeCoverage.runsettings
+├── Directory.Packages.props
+├── docker-compose.yml
+├── docker-compose.override.yml
+├── docker-compose-webapp.yml
+├── eShopOnWeb.sln
+├── global.json
+├── LICENSE
+├── MTT-Notes.md
+├── README.md
+└── azure.yaml
 ```
-curl -fsSL https://aka.ms/install-azd.sh | bash
+
+This structure reflects the current repository rather than introducing an artificial project structure.
+
+---
+
+# Application Projects
+
+## ApplicationCore
+
+Contains core application/domain concerns used by the solution.
+
+The project is intended to remain independent of infrastructure-specific implementation details.
+
+## Infrastructure
+
+Contains infrastructure-related implementation, including persistence and application infrastructure.
+
+Entity Framework Core is used for data access.
+
+## Web
+
+Contains the primary ASP.NET Core web application.
+
+Most of the application's user-facing functionality is available through this project.
+
+## PublicApi
+
+Provides the application's public API used by other parts of the solution, including the administration functionality.
+
+## BlazorAdmin
+
+Contains the Blazor-based administration functionality.
+
+The administration area communicates with the application's server through the Public API.
+
+## BlazorShared
+
+Contains shared Blazor components and supporting code.
+
+---
+
+# Test Strategy
+
+One of the useful aspects of this repository is that testing is separated into multiple projects.
+
+```text
+                         Test Strategy
+                              │
+              ┌───────────────┼────────────────┐
+              │               │                │
+              ▼               ▼                ▼
+        Unit Tests      Integration Tests   API Tests
+              │               │                │
+              └───────────────┼────────────────┘
+                              │
+                              ▼
+                       Functional Tests
 ```
 
-And you can also install with package managers, like winget, choco, and brew. For more details, you can follow the documentation: https://aka.ms/azure-dev/install.
+## Unit Tests
 
-After logging in with the following command, you will be able to use the azd cli to quickly provision and deploy the application.
+Location:
 
-```
-azd auth login
-```
-
-Then, execute the `azd init` command to initialize the environment.
-```
-azd init -t dotnet-architecture/eShopOnWeb 
+```text
+tests/UnitTests
 ```
 
-Run `azd up` to provision all the resources to Azure and deploy the code to those resources.
+Used for testing application behavior in an isolated manner.
+
+## Integration Tests
+
+Location:
+
+```text
+tests/IntegrationTests
 ```
-azd up 
+
+Used for testing interactions between application components and infrastructure.
+
+## Public API Integration Tests
+
+Location:
+
+```text
+tests/PublicApiIntegrationTests
 ```
 
-According to the prompt, enter an `env name`, and select `subscription` and `location`, these are the necessary parameters when you create resources. Wait a moment for the resource deployment to complete, click the web endpoint and you will see the home page.
+Provides a dedicated test project for API integration scenarios.
 
-**Notes:**
-1. Considering security, we store its related data (id, password) in the **Azure Key Vault** when we create the database, and obtain it from the Key Vault when we use it. This is different from directly deploying applications locally.
-2. The resource group name created in azure portal will be **rg-{env name}**.
+## Functional Tests
 
-You can also run the sample directly locally (See below).
+Location:
 
-## Running the sample locally
-Most of the site's functionality works with just the web application running. However, the site's Admin page relies on Blazor WebAssembly running in the browser, and it must communicate with the server using the site's PublicApi web application. You'll need to also run this project. You can configure Visual Studio to start multiple projects, or just go to the PublicApi folder in a terminal window and run `dotnet run` from there. After that from the Web folder you should run `dotnet run --launch-profile Web`. Now you should be able to browse to `https://localhost:5001/`. The admin part in Blazor is accessible to `https://localhost:5001/admin`  
-
-Note that if you use this approach, you'll need to stop the application manually in order to build the solution (otherwise you'll get file locking errors).
-
-After cloning or downloading the sample you must setup your database. 
-To use the sample with a persistent database, you will need to run its Entity Framework Core migrations before you will be able to run the app.
-
-You can also run the samples in Docker (see below).
-
-### Configuring the sample to use SQL Server
-
-1. By default, the project uses a real database. If you want an in memory database, you can add in the `appsettings.json` file in the Web folder
-
-    ```json
-   {
-       "UseOnlyInMemoryDatabase": true
-   }
-    ```
-
-1. Ensure your connection strings in `appsettings.json` point to a local SQL Server instance.
-1. Ensure the tool EF was already installed. You can find some help [here](https://docs.microsoft.com/ef/core/miscellaneous/cli/dotnet)
-
-    ```
-    dotnet tool update --global dotnet-ef
-    ```
-
-1. Open a command prompt in the Web folder and execute the following commands:
-
-    ```
-    dotnet restore
-    dotnet tool restore
-    dotnet ef database update -c catalogcontext -p ../Infrastructure/Infrastructure.csproj -s Web.csproj
-    dotnet ef database update -c appidentitydbcontext -p ../Infrastructure/Infrastructure.csproj -s Web.csproj
-    ```
-
-    These commands will create two separate databases, one for the store's catalog data and shopping cart information, and one for the app's user credentials and identity data.
-
-1. Run the application.
-
-    The first time you run the application, it will seed both databases with data such that you should see products in the store, and you should be able to log in using the demouser@microsoft.com account.
-
-    Note: If you need to create migrations, you can use these commands:
-
-    ```
-    -- create migration (from Web folder CLI)
-    dotnet ef migrations add InitialModel --context catalogcontext -p ../Infrastructure/Infrastructure.csproj -s Web.csproj -o Data/Migrations
-
-    dotnet ef migrations add InitialIdentityModel --context appidentitydbcontext -p ../Infrastructure/Infrastructure.csproj -s Web.csproj -o Identity/Migrations
-    ```
-
-## Running the sample in the dev container
-
-This project includes a `.devcontainer` folder with a [dev container configuration](https://containers.dev/), which lets you use a container as a full-featured dev environment.
-
-You can use the dev container to build and run the app without needing to install any of its tools locally! You can work in GitHub Codespaces or the VS Code Dev Containers extension.
-
-Learn more about using the dev container in its [readme](/.devcontainer/devcontainerreadme.md).
-
-## Running the sample using Docker
-
-You can run the Web sample by running these commands from the root folder (where the .sln file is located):
-
+```text
+tests/FunctionalTests
 ```
+
+Provides functional-level testing of the web application.
+
+The solution file explicitly includes all four test projects.
+
+> **Note:** This README intentionally does not publish a test count, pass percentage, code coverage percentage, or quality metric because those values should only be reported from an actual test execution.
+
+---
+
+# CI/CD
+
+The repository contains GitHub Actions workflows under:
+
+```text
+.github/workflows/
+```
+
+The workflows include build/test and deployment-related automation.
+
+The repository also contains Azure deployment resources and configuration, allowing the application to be used with Azure deployment workflows.
+
+CI/CD-related components should be viewed together with:
+
+```text
+.github/workflows/
+infra/
+azure.yaml
+```
+
+The existing repository includes a GitHub Actions workflow for the eShopOnWeb build/test and deployment process.
+
+> **Important:** The presence of workflow definitions does not by itself guarantee that every workflow currently succeeds in every environment. Workflow status should be verified through the GitHub Actions tab for the current commit.
+
+---
+
+# Docker Support
+
+The repository includes Docker and Docker Compose configuration.
+
+Relevant files include:
+
+```text
+docker-compose.yml
+docker-compose.override.yml
+docker-compose-webapp.yml
+.dockerignore
+```
+
+The application can be built and started using Docker Compose from the repository root.
+
+```bash
 docker-compose build
 docker-compose up
 ```
 
-You should be able to make requests to localhost:5106 for the Web project, and localhost:5200 for the Public API project once these commands complete. If you have any problems, especially with login, try from a new guest or incognito browser instance.
+The existing configuration exposes the Web application and Public API on the ports documented by the original project.
 
-You can also run the applications by using the instructions located in their `Dockerfile` file in the root of each project. Again, run these commands from the root of the solution (where the .sln file is located).
+---
 
-## Community Extensions
+# Development Container
 
-We have some great contributions from the community, and while these aren't maintained by Microsoft we still want to highlight them.
+The repository contains a `.devcontainer` configuration.
 
-[eShopOnWeb VB.NET](https://github.com/VBAndCs/eShopOnWeb_VB.NET) by Mohammad Hamdy Ghanem
+This can be used with:
+
+* Visual Studio Code Dev Containers
+* GitHub Codespaces
+* compatible development-container environments
+
+The development container is intended to provide a configured development environment without requiring every project dependency to be installed directly on the host machine.
+
+---
+
+# Running Locally
+
+## Prerequisites
+
+The current project targets **ASP.NET Core 8.0 / .NET 8**.
+
+Depending on the selected execution method, you may also need:
+
+* .NET 8 SDK
+* SQL Server, or the configured in-memory database option
+* Entity Framework Core tooling
+* Docker Desktop, if using Docker
+* Azure Developer CLI (`azd`), if deploying through Azure Developer CLI
+
+---
+
+## Clone the Repository
+
+```bash
+git clone https://github.com/SonaliMB/eShopOnWeb.git
+cd eShopOnWeb
+```
+
+---
+
+## Restore Dependencies
+
+```bash
+dotnet restore
+```
+
+The repository uses central NuGet package management through:
+
+```text
+Directory.Packages.props
+```
+
+---
+
+# Database Configuration
+
+The application supports a persistent database configuration using SQL Server.
+
+The original project documentation also describes an in-memory database option.
+
+For the in-memory configuration, the Web application's `appsettings.json` can contain:
+
+```json
+{
+  "UseOnlyInMemoryDatabase": true
+}
+```
+
+For SQL Server usage, configure the appropriate connection strings in the application's configuration.
+
+Do not commit passwords, tokens, or other sensitive credentials to the repository.
+
+---
+
+# Entity Framework Core Database Setup
+
+From the Web project directory, the original application documentation provides the following migration commands:
+
+```bash
+dotnet tool restore
+
+dotnet ef database update \
+  -c catalogcontext \
+  -p ../Infrastructure/Infrastructure.csproj \
+  -s Web.csproj
+
+dotnet ef database update \
+  -c appidentitydbcontext \
+  -p ../Infrastructure/Infrastructure.csproj \
+  -s Web.csproj
+```
+
+These migrations create the application's catalog/cart database and identity database.
+
+The first application startup also seeds the database with sample data.
+
+---
+
+# Run the Application
+
+The application can be run locally using the Web project.
+
+From:
+
+```text
+src/Web
+```
+
+run:
+
+```bash
+dotnet run --launch-profile Web
+```
+
+The Public API project also needs to be running for administration functionality.
+
+From:
+
+```text
+src/PublicApi
+```
+
+run:
+
+```bash
+dotnet run
+```
+
+The original application documentation describes the Web application as available at:
+
+```text
+https://localhost:5001/
+```
+
+with the administration area at:
+
+```text
+https://localhost:5001/admin
+```
+
+The exact local URL can vary depending on the launch profile and local environment.
+
+---
+
+# Running Tests
+
+The solution contains separate test projects for:
+
+```text
+tests/UnitTests
+tests/IntegrationTests
+tests/PublicApiIntegrationTests
+tests/FunctionalTests
+```
+
+To restore and build the solution:
+
+```bash
+dotnet restore
+dotnet build --no-restore
+```
+
+To execute the complete test suite:
+
+```bash
+dotnet test
+```
+
+For more targeted execution, individual test projects can be executed directly, for example:
+
+```bash
+dotnet test tests/UnitTests/UnitTests.csproj
+```
+
+```bash
+dotnet test tests/IntegrationTests/IntegrationTests.csproj
+```
+
+```bash
+dotnet test tests/PublicApiIntegrationTests/PublicApiIntegrationTests.csproj
+```
+
+```bash
+dotnet test tests/FunctionalTests/FunctionalTests.csproj
+```
+
+> Test results should be taken from the actual execution environment. This README intentionally does not state that all tests currently pass because that has not been independently verified as part of this README update.
+
+---
+
+# Code Coverage
+
+The solution includes:
+
+```text
+CodeCoverage.runsettings
+```
+
+which is included as a solution item.
+
+This provides configuration that can be used when collecting coverage information.
+
+Coverage percentages are intentionally not published here unless they have been generated from an actual test run.
+
+---
+
+# Azure Deployment
+
+The repository contains Azure-related deployment resources, including:
+
+```text
+infra/
+azure.yaml
+```
+
+The original eShopOnWeb documentation also supports deployment using the Azure Developer CLI (`azd`).
+
+Typical Azure Developer CLI commands include:
+
+```bash
+azd auth login
+azd init
+azd up
+```
+
+Deployment requires an appropriately configured Azure subscription and environment.
+
+Do not place Azure credentials, secrets, or private configuration values directly in source control.
+
+---
+
+# Engineering Practices Demonstrated
+
+The repository provides examples of several software engineering practices:
+
+### Application Architecture
+
+* Layered application structure
+* Separation of application and infrastructure concerns
+* Dependency-based project organization
+
+### Testing
+
+* Unit testing
+* Integration testing
+* API integration testing
+* Functional testing
+
+### Development
+
+* Centralized package version management
+* `.editorconfig`
+* Git configuration
+* Solution-level project organization
+
+### DevOps
+
+* GitHub Actions workflows
+* Docker
+* Docker Compose
+* Azure deployment configuration
+* Infrastructure-as-code resources
+* Development containers
+
+These statements are based on the files and projects currently present in the repository.
+
+---
+
+# Security Considerations
+
+When running the application locally or deploying it to Azure:
+
+* Do not commit passwords or API keys.
+* Do not commit Azure credentials.
+* Do not commit production connection strings containing credentials.
+* Use environment-specific configuration for secrets.
+* Review GitHub Actions configuration before enabling deployment.
+* Use GitHub repository secrets/variables or the appropriate Azure secret-management mechanism for deployment credentials.
+
+The original application documentation also describes the use of Azure Key Vault for sensitive deployment data in its Azure deployment scenario.
+
+---
+
+# Repository Quality Notes
+
+This repository is based on a Microsoft reference application. Therefore, it should be evaluated in two contexts:
+
+1. **The original eShopOnWeb application and architecture**
+2. **Any additional changes or engineering work made in this repository**
+
+This distinction is intentionally documented so that the repository does not misrepresent Microsoft-authored reference application functionality as original work.
+
+---
+
+# Original Project & References
+
+The underlying application is the Microsoft **eShopOnWeb ASP.NET Core Reference Application**.
+
+Original project:
+
+https://github.com/dotnet-architecture/eShopOnWeb
+
+The reference application is associated with Microsoft's free resource:
+
+**Architecting Modern Web Applications with ASP.NET Core and Azure**
+
+https://aka.ms/webappebook
+
+The original project documentation describes eShopOnWeb as a sample/reference application intended to demonstrate architectural principles and patterns rather than as a complete production e-commerce platform.
+
+---
+
+# License
+
+This repository contains an MIT License.
+
+See:
+
+```text
+LICENSE
+```
+
+for the applicable license terms.
+
+---
+
+# Repository Links
+
+* **Repository:** https://github.com/SonaliMB/eShopOnWeb
+* **Source:** `src/`
+* **Tests:** `tests/`
+* **CI/CD:** `.github/workflows/`
+* **Infrastructure:** `infra/`
+* **Development Container:** `.devcontainer/`
+* **Docker:** `docker-compose.yml`
+
+---
+
+# Future Improvements
+
+Potential future improvements can include:
+
+* Expanding automated test coverage where appropriate
+* Improving test reporting in CI
+* Adding clearer CI quality gates
+* Adding automated security/dependency checks
+* Improving API documentation
+* Adding application screenshots and architecture diagrams
+* Improving deployment environment configuration
+* Adding additional end-to-end automation where valuable
+* Documenting measurable test and build results from actual CI executions
+
+These are proposed improvements, not claims about functionality currently implemented in the repository.
+
+---
+
+## Disclaimer
+
+This repository is based on the Microsoft eShopOnWeb reference application.
+
+Any modifications, testing improvements, documentation improvements, automation changes, or DevOps changes made in this repository should be considered separately from the original Microsoft reference implementation.
+
+No performance, test-pass, coverage, deployment-success, or production-readiness claims are made here unless supported by verifiable project results.
